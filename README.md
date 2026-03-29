@@ -1,5 +1,7 @@
 # NEOM Autonomous Fleet Simulator
 
+![Run Tests](https://github.com/AhmedTAlZahrani/neom-autonomous-fleet-simulator/actions/workflows/run-tests.yml/badge.svg)
+
 Simulation platform for autonomous pod fleet management along The Line (170km corridor). Models trip demand across 50 zones, compares Greedy / LP / Q-Learning dispatch strategies with Streamlit visualization.
 
 ## Install

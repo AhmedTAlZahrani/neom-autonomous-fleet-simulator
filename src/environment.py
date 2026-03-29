@@ -1,3 +1,5 @@
+from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 from collections import deque
 
@@ -67,7 +69,7 @@ class Passenger:
 
 class SimulationEnvironment:
 
-    def __init__(self, fleet_size=500, pod_capacity=6, seed=42):
+    def __init__(self, fleet_size: int = 500, pod_capacity: int = 6, seed: int = 42) -> None:
         # TODO: parallelize simulation runs
         self.fleet_size = fleet_size
         self.maxVehicles = fleet_size
@@ -84,7 +86,7 @@ class SimulationEnvironment:
         self._history = []
         print(f"Environment initialized: {fleet_size} pods, {pod_capacity} capacity")
 
-    def _init_fleet(self):
+    def _init_fleet(self) -> List["Pod"]:
         """Distribute pods evenly across the corridor.
 
         Returns:
@@ -97,7 +99,7 @@ class SimulationEnvironment:
         print(f"  Fleet deployed: {len(pods)} pods across {CORRIDOR_LENGTH_KM}km")
         return pods
 
-    def _zone_center(self, zone_id):
+    def _zone_center(self, zone_id: int) -> float:
         """Get the center position of a zone in kilometers.
 
         Args:
@@ -108,7 +110,7 @@ class SimulationEnvironment:
         """
         return (zone_id + 0.5) * ZONE_LENGTH_KM
 
-    def _travel_time_minutes(self, from_km, to_km):
+    def _travel_time_minutes(self, from_km: float, to_km: float) -> float:
         """Calculate travel time between two positions.
 
         Includes a congestion factor based on distance.
@@ -124,7 +126,7 @@ class SimulationEnvironment:
         congestion = 1.0 + 0.1 * (distance / CORRIDOR_LENGTH_KM)
         return distance / (BASE_SPEED_KPM / congestion)
 
-    def inject_passengers(self, od_matrix):
+    def inject_passengers(self, od_matrix: np.ndarray) -> None:
         """Add new passengers to zone queues based on demand matrix.
 
         Args:
@@ -140,7 +142,7 @@ class SimulationEnvironment:
                     self.queues[orig].append(p)
                     self.passenger_counter += 1
 
-    def _abandon_long_waiters(self, max_wait=30):
+    def _abandon_long_waiters(self, max_wait: int = 30) -> None:
         """Remove passengers who have waited too long.
 
         Args:
@@ -156,7 +158,7 @@ class SimulationEnvironment:
                     remaining.append(p)
             self.queues[zone_id] = remaining
 
-    def apply_dispatch(self, assignments):
+    def apply_dispatch(self, assignments: List[Tuple[int, int]]) -> None:
         """Apply dispatch decisions from an optimizer.
 
         Args:
@@ -202,7 +204,7 @@ class SimulationEnvironment:
             pod.status = "boarding"
             pod.boarding_timer = 2
 
-    def _update_pods(self):
+    def _update_pods(self) -> None:
         """Advance pod movements by one timestep (1 minute)."""
         for pod in self.pods:
             if pod.status == "boarding":
@@ -236,7 +238,7 @@ class SimulationEnvironment:
                     pod.position_km += direction * move_dist
                     pod.km_traveled += move_dist
 
-    def step(self, od_matrix=None):
+    def step(self, od_matrix: Optional[np.ndarray] = None) -> None:
         """Advance the simulation by one timestep (1 minute).
 
         Args:
@@ -249,7 +251,7 @@ class SimulationEnvironment:
         self._abandon_long_waiters()
         self.timestep += 1
 
-    def get_state(self):
+    def get_state(self) -> Dict:
         """Capture the current simulation state for dispatchers.
 
         Returns:
@@ -291,7 +293,7 @@ class SimulationEnvironment:
             "total_abandoned": len(self.abandoned_passengers),
         }
 
-    def get_snapshot(self):
+    def get_snapshot(self) -> Dict:
         """Create a lightweight snapshot for visualization.
 
         Returns:
@@ -318,7 +320,7 @@ class SimulationEnvironment:
             "total_abandoned": state["total_abandoned"],
         }
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset the environment to initial state."""
         self.timestep = 0
         self.passenger_counter = 0
