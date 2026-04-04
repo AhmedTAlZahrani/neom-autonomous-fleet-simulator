@@ -34,3 +34,19 @@ for t in range(len(demand)):
     metrics.record_snapshot(env)
 metrics.finalize(env)
 ```
+
+## Project Structure
+
+```
+src/
+    data_generator.py     Trip demand generation across 50 zones
+    environment.py        Simulation state and pod fleet management
+    fleet_optimizer.py    Greedy / LP / Q-Learning dispatchers
+    metrics.py            Wait time, utilization, throughput tracking
+    visualization.py      Plotly charts for simulation results
+app.py                    Streamlit dashboard
+```
+
+## License
+
+Apache License 2.0
